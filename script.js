@@ -1,8 +1,14 @@
 const axios = require('axios');
 const fs = require('fs')
-const parallel = require('./csvjson.json')
+const parallel = require('./parallel.json')
+const bifrost = require('./bifrost.json')
 const convertToFloat = require('./convertToFloat')
+
+
 const parallelTruncated = parallel.slice(0,5)
+
+
+
 async function getAllData(url,address,contributions) {
   let allData = [];
   let currentPage = 0;
@@ -38,13 +44,12 @@ async function getAllData(url,address,contributions) {
   } catch (error) {
     console.error('Error:', error.message);
   }
-return checkforTransfer(allData,address,"13wNbioJt44NKrcQ5ZUrshJqP7TKzQbzZt5nhkeL4joa3PAX",contributions)
+return checkforTransfer(allData,address,"14AMZ3gw4tRsrdp78i4MmHZ8EFbXTMfuXGQMEC3t1GoqLboH",contributions)
 }
 
 // Usage
 const apiUrl= 'https://polkadot.api.subscan.io/api/scan/transfers'
 
-// getAllData(apiUrl);
 const endBlock = 10881400
 const startBlock = 9743882
 const checkforTransfer = (allData,from,to,contributions)=>{
@@ -64,8 +69,6 @@ for (let q = 0; q < allData.length; q++) {
  {
   amountSum = amountSum+parseFloat(parseFloat(obj.amount).toFixed(2))
   reviewdObj.blocks.push(obj.block_num)
-  // console.log(amountSum);
-  // console.log(amountSum,parseFloat(contributions));
  }
  
  if(amountSum>=convertToFloat(contributions))
@@ -90,12 +93,12 @@ else
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const reviewedData = []
 const sendReqs = async()=>{
-  for (let k = 0; k < parallel.length; k++) {
-    const element = parallel[k];
+  for (let k = 0; k < bifrost.length; k++) {
+    const element = bifrost[k];
     
-  const data =  await getAllData(apiUrl,element.AccountID,element.Amount)
+  const data =  await getAllData(apiUrl,element.AccountId,element.Amount)
   reviewedData.push(data)
-    await delay(500)
+    await delay(250)
     
   }
 
@@ -106,9 +109,8 @@ const sendReqs = async()=>{
         console.log('It\'s saved!');
     }
 });
-  // console.log(reviewedData);
 }
 sendReqs()
 
-// getAllData(apiUrl,"14wGfkRNHQN5gUhJn7zoGfRmeodHMitdtGyNRCaycShWUiwf",199.02)
+// getAllData(apiUrl,"15gJZFJb7Gm8hPFR12Q7djCKX5rPv8SmJP61zdkc2S1o4n8g",5.2)
 // console.log(parseFloat('124.00'));
