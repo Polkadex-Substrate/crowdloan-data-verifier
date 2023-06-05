@@ -4,7 +4,13 @@ const parallel = require("./parallel.json");
 const bifrost = require("./bifrost.json");
 const equilibrium = require("./equilibrium.json");
 const convertToFloat = require("./convertToFloat");
+const trunc = equilibrium.splice(1, 10);
 
+const apiUrl = "https://polkadot.api.subscan.io/api/scan/transfers";
+const endBlock = 10881400;
+const startBlock = 9743882;
+
+// function to fetch transfers for one single account
 async function getAllData(url, address, contributions) {
   let allData = [];
   let currentPage = 0;
@@ -31,7 +37,6 @@ async function getAllData(url, address, contributions) {
       if (totalRows >= response.data.data.count) {
         break;
       }
-
       currentPage++;
     }
   } catch (error) {
@@ -45,16 +50,11 @@ async function getAllData(url, address, contributions) {
   );
 }
 
-// Usage
-const apiUrl = "https://polkadot.api.subscan.io/api/scan/transfers";
-
-const endBlock = 10881400;
-const startBlock = 9743882;
+// function to check if the account made transfers to the particular address or not
 const checkforTransfer = (allData, from, to, contributions) => {
   allData.sort((a, b) => {
     return a.amount - b.amount;
   });
-  // console.log(allData.length,'printing lenght');
 
   let amountSum = 0;
   let valid = false;
@@ -64,10 +64,7 @@ const checkforTransfer = (allData, from, to, contributions) => {
     const withinLimits =
       obj.block_num <= endBlock && obj.block_num >= startBlock;
     if (obj.from === from && obj.to === to && obj.block_num && withinLimits) {
-      // amountSum = amountSum + parseFloat(parseFloat(obj.amount).toFixed(2));
       amountSum = amountSum + parseFloat(obj.amount);
-      // console.log(obj.amount);
-      // console.log(parseFloat(amountSum.toFixed(2)));
       reviewdObj.blocks.push(obj.block_num);
     }
 
@@ -87,18 +84,26 @@ const checkforTransfer = (allData, from, to, contributions) => {
 };
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const reviewedData = [];
-const sendReqs = async () => {
-  for (let k = 0; k < equilibrium.length; k++) {
-    const element = equilibrium[k];
+
+// function to check for every account in the file
+const mainFn = async () => {
+  for (let k = 0; k < trunc.length; k++) {
+    const element = trunc[k];
 
     const data = await getAllData(apiUrl, element.AccountId, element.Amount);
     reviewedData.push(data);
     await delay(200);
   }
+  writeToFile(reviewedData);
+};
 
+mainFn();
+
+// function to print the final data in a separate file
+const writeToFile = (data) => {
   fs.writeFile(
-    "check.json",
-    JSON.stringify(reviewedData, null, 2),
+    "file.json",
+    JSON.stringify(data, null, 2),
     "utf8",
     function (err) {
       if (err) {
@@ -111,11 +116,6 @@ const sendReqs = async () => {
     }
   );
 };
-sendReqs();
 
 // getAllData(apiUrl, "14wqYcJxV4zcYNNeHwSPFE1PgG9RLaHfwo5DjW1bUz6wKhZJ", 108.38);
-// console.log(parseFloat('124.00'));
-
-// 15VY44qZsz7e3YSmXMXAkpZ2qjoCE9RSM6sh3nY7g79cyWJC
-// 14wqYcJxV4zcYNNeHwSPFE1PgG9RLaHfwo5DjW1bUz6wKhZJ
-// 1ZBxptd5AxFxRts68TB63TZAVq6enxzbEjPpd6cUdBgWBz5
+// for checking if one single account contributed or not
