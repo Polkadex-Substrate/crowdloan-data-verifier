@@ -50,7 +50,7 @@ async function getAllData(url, address, contributions) {
   );
 }
 
-// function to check if the account made transfers to the particular address or not
+// function to check if the account made transfers to the particular address or not and return the object containing details like to,from,amount contributed and block
 const checkforTransfer = (allData, from, to, contributions) => {
   allData.sort((a, b) => {
     return a.amount - b.amount;
@@ -85,7 +85,7 @@ const checkforTransfer = (allData, from, to, contributions) => {
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const reviewedData = [];
 
-// function to check for every account in the file
+// function to check for every account in the file and push every object that contributed to an array
 const mainFn = async () => {
   for (let k = 0; k < trunc.length; k++) {
     const element = trunc[k];
