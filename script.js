@@ -8,9 +8,10 @@ const convertToFloat = require("./convertToFloat");
 const apiUrl = "https://polkadot.api.subscan.io/api/scan/transfers";
 const endBlock = 10881400;
 const startBlock = 9743882;
+const destinationAddress = "14AMZ3gw4tRsrdp78i4MmHZ8EFbXTMfuXGQMEC3t1GoqLboH";
 
 // function to fetch transfers for one single account
-async function getAllData(url, address, contributions) {
+async function getAllData(url, sourceAddress, contributions) {
   let allData = [];
   let currentPage = 0;
   let totalRows = 0;
@@ -21,7 +22,7 @@ async function getAllData(url, address, contributions) {
       let param = JSON.stringify({
         row: rowsPerPage,
         page: currentPage,
-        address: address,
+        address: sourceAddress,
       });
       const response = await axios.post(url, param, {
         headers: {
@@ -43,8 +44,8 @@ async function getAllData(url, address, contributions) {
   }
   return checkforTransfer(
     allData,
-    address,
-    "13rWYJ2DWj4ZQrZWfVJRJXqVSaQfd34QmRJrsJdSsApnnmK",
+    sourceAddress,
+    destinationAddress,
     contributions
   );
 }
@@ -88,12 +89,12 @@ const reviewedData = [];
 
 // function to check for every account in the file and push every object that contributed to an array
 const mainFn = async () => {
-  for (let k = 0; k < bifrost.length; k++) {
+  for (let k = 0; k < 10; k++) {
     const element = bifrost[k];
 
     const data = await getAllData(apiUrl, element.AccountId, element.Amount);
 
-    // in element.AccountId and element.Amount , make sure to replace AccountId and Amount with the name in your file
+    // in element.AccountId and element.Amount , make sure to replace AccountId and Amount with the respective names from your file
 
     reviewedData.push(data);
     await delay(200);
