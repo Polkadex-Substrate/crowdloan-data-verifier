@@ -4,7 +4,6 @@ const parallel = require("./parallel.json");
 const bifrost = require("./bifrost.json");
 const equilibrium = require("./equilibrium.json");
 const convertToFloat = require("./convertToFloat");
-const trunc = equilibrium.splice(1, 10);
 
 const apiUrl = "https://polkadot.api.subscan.io/api/scan/transfers";
 const endBlock = 10881400;
@@ -82,13 +81,15 @@ const checkforTransfer = (allData, from, to, contributions) => {
     return {};
   }
 };
+
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const reviewedData = [];
 
 // function to check for every account in the file and push every object that contributed to an array
 const mainFn = async () => {
-  for (let k = 0; k < trunc.length; k++) {
-    const element = trunc[k];
+  for (let k = 0; k < bifrost.length; k++) {
+    const element = bifrost[k];
 
     const data = await getAllData(apiUrl, element.AccountId, element.Amount);
     reviewedData.push(data);
