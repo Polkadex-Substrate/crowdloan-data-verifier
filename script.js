@@ -92,6 +92,9 @@ const mainFn = async () => {
     const element = bifrost[k];
 
     const data = await getAllData(apiUrl, element.AccountId, element.Amount);
+
+    // in element.AccountId and element.Amount , make sure to replace AccountId and Amount with the name in your file
+
     reviewedData.push(data);
     await delay(200);
   }
