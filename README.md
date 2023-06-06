@@ -12,7 +12,7 @@ Follow these steps to run the script:
 - In the script.js file ,import the json file you want to run the script on, ensure the data is in json format.  
    Hers is an example -  
    `const bifrost = require("./bifrost.json");`
- 
+- Replac the destination address witht the your destination address `const destinationAddress = "your destination address";`
 - Replace the file name here in the mainFn function with the file name you imported. 
  
   `const mainFn = async () => {
